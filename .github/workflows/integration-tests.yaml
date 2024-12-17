@@ -1,0 +1,50 @@
+---
+name: Integration Tests
+on:
+  pull_request:
+    paths:
+      - "action.yaml"
+      - "gha_extract_shell_scripts.py"
+      - ".github/workflows/integration-tests.yaml"
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run action
+        id: self
+        uses: ./
+      - name: Target step
+        run: |
+          echo "${{ env.greeting }}, $name"
+        env:
+          greeting: Hello
+          name: Integration Tests
+      - name: Test extracted
+        run: |
+          if [[ -f "$output_file" ]]; then
+              echo "Output:"
+              cat -n "$output_file"
+              echo "Expected:"
+              cat -n <<<"$expected"
+          else
+              find "${output_dir:?}"
+              exit 1
+          fi
+          diff --color=always "${output_file:?}" <(echo "${expected:?}")
+        env:
+          output_dir: ${{ steps.self.outputs.output-dir }}
+          output_file: ${{ steps.self.outputs.output-dir }}/integration-tests.yaml/job=Test/step=Target_step.sh
+          expected: |-
+            #!/usr/bin/env bash
+            set -e
+            # shellcheck disable=SC2034
+            greeting='Hello'
+            # shellcheck disable=SC2034
+            name='Integration Tests'
+            # ---
+            echo ":env.greeting:, $name"
