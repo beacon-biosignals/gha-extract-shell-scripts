@@ -2,7 +2,7 @@
 inputs:
   output-dir:
     default: "workflow_scripts"
-  disable:
+  shellcheck-disable:
     default: ""
 outputs:
   output-dir:
@@ -27,6 +27,6 @@ runs:
         args+=("$input_dir" "$output_dir")
         python "${GITHUB_ACTION_PATH}/gha_extract_shell_scripts.py" "${args[@]}"
       env:
-        disable: ${{ inputs.disable }}
+        disable: ${{ inputs.shellcheck-disable }}
         input_dir: .github/workflows
         output_dir: ${{ inputs.output-dir }}
