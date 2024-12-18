@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "**.sh"
-      - ".github/workflows"
+      - ".github/workflows/*"
       - "action.yaml"
       - "gha_extract_shell_scripts.py"
 
