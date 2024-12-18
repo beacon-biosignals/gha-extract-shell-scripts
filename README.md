@@ -29,7 +29,7 @@ jobs:
         uses: beacon-biosignals/gha-extract-shell-scripts@v1
       - uses: luizm/action-sh-checker@c6edb3de93e904488b413636d96c6a56e3ad671a  # v0.8.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           sh_checker_comment: true
 ```
