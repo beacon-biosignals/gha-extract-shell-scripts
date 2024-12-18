@@ -42,9 +42,9 @@ jobs:
           expected: |-
             #!/usr/bin/env bash
             set -e
-            # shellcheck disable=SC2034
+            # shellcheck disable=SC2016,SC2034
             greeting='Hello'
-            # shellcheck disable=SC2034
+            # shellcheck disable=SC2016,SC2034
             name='Integration Tests'
             # ---
             echo ":env.greeting:, $name"

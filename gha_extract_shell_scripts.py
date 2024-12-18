@@ -90,7 +90,7 @@ def process_workflow_file(workflow_path: Path, output_dir: Path, ignored_errors=
                 elif shell == "bash":
                     f.write("set -eo pipefail\n")
                 for k, v in env.items():
-                    f.write("# shellcheck disable=SC2034\n")
+                    f.write("# shellcheck disable=SC2016,SC2034\n")
                     v = sanitize_gha_expression(str(v)).replace("'", "'\\''")
                     f.write(f"{k}='{v}'\n")
                 f.write("# ---\n")
