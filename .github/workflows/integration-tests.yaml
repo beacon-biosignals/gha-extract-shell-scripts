@@ -26,6 +26,7 @@ jobs:
           name: Integration Tests
       - name: Test extracted
         run: |
+          echo $foo
           if [[ -f "$output_file" ]]; then
               echo "Output:"
               cat -n "$output_file"
