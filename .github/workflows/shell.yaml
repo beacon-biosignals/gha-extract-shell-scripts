@@ -9,23 +9,6 @@ on:
       - "gha_extract_shell_scripts.py"
 
 jobs:
-  workflow-scripts:
-    name: Extract workflow scripts
-    runs-on: ubuntu-latest
-    # These permissions are needed to:
-    # - Checkout the Git repo (`contents: read`)
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - name: Extract workflow shell scripts
-        id: extract
-        uses: ./
-      - uses: actions/upload-artifact@v4
-        with:
-          name: workflow-scripts
-          path: ${{ steps.extract.outputs.output-dir }}
-
   lint-format:
     name: Lint & Format
     needs: workflow-scripts
@@ -38,12 +21,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download workflow scripts
-        uses: actions/download-artifact@v4
-        with:
-          name: workflow-scripts
+      - name: Extract workflow shell scripts
+        id: extract
+        uses: ./
       - uses: luizm/action-sh-checker@c6edb3de93e904488b413636d96c6a56e3ad671a  # v0.8.0
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           sh_checker_comment: true
+      # Support investigating linting/formatting errors
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: workflow-scripts
+          path: ${{ steps.extract.outputs.output-dir }}
