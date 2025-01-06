@@ -1,0 +1,32 @@
+---
+inputs:
+  output-dir:
+    default: "workflow_scripts"
+  shellcheck-disable:
+    default: ""
+outputs:
+  output-dir:
+    value: ${{ inputs.output-dir }}
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        venv="$(mktemp -d venv.XXXXXX)"
+        python -m venv "$venv"
+        source "$venv/bin/activate"
+        python -m pip install -r "${GITHUB_ACTION_PATH}/requirements.txt"
+    - name: Extract shell scripts
+      shell: bash
+      run: |
+        args=()
+        if [[ -n "$disable" ]]; then
+            args+=(--disable "$disable")
+        fi
+        args+=("$input_dir" "$output_dir")
+        python "${GITHUB_ACTION_PATH}/gha_extract_shell_scripts.py" "${args[@]}"
+      env:
+        disable: ${{ inputs.shellcheck-disable }}
+        input_dir: .github/workflows
+        output_dir: ${{ inputs.output-dir }}

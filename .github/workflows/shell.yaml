@@ -1,0 +1,37 @@
+---
+name: Shell
+on:
+  pull_request:
+    paths:
+      - "**.sh"
+      - ".github/workflows/*"
+      - "action.yaml"
+      - "gha_extract_shell_scripts.py"
+
+jobs:
+  lint-format:
+    name: Lint & Format
+    needs: workflow-scripts
+    # These permissions are needed to:
+    # - Checkout the Git repo (`contents: read`)
+    # - Post a comments on PRs: https://github.com/luizm/action-sh-checker#secrets
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract workflow shell scripts
+        id: extract
+        uses: ./
+      - uses: luizm/action-sh-checker@c6edb3de93e904488b413636d96c6a56e3ad671a  # v0.8.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          sh_checker_comment: true
+      # Support investigating linting/formatting errors
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: workflow-scripts
+          path: ${{ steps.extract.outputs.output-dir }}
