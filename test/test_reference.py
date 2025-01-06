@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import shutil
 import sys
+import textwrap
 import unittest
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,11 +12,14 @@ sys.path.append(os.path.dirname(TEST_DIR))
 from gha_extract_shell_scripts import process_workflow_file
 
 def clean(string):
-    string = inspect.cleandoc(string)
+    string = textwrap.dedent(string).rstrip()
     return [l + "\n" for l in string.split("\n")]
 
 
 class TestReferenceWorkflows(unittest.TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
     def tearDown(self):
         shutil.rmtree("workflow_scripts")
 
@@ -44,6 +48,29 @@ class TestReferenceWorkflows(unittest.TestCase):
                 set -e
                 # ---
                 ls :github.workspace:
+                """
+            self.assertListEqual(list(f), clean(expected))
+
+    def test_nested_env(self):
+        output_dir = Path("workflow_scripts")
+        process_workflow_file(Path(f"{TEST_DIR}/nested-env.yaml"), output_dir)
+        self.assertTrue(os.path.isdir(f"{output_dir}"))
+        self.assertTrue(os.path.isdir(f"{output_dir}/nested-env.yaml"))
+        self.assertTrue(os.path.isdir(f"{output_dir}/nested-env.yaml/job=test"))
+
+        self.assertTrue(os.path.isfile(f"{output_dir}/nested-env.yaml/job=test/step=Print_variables.sh"))
+        with open(f"{output_dir}/nested-env.yaml/job=test/step=Print_variables.sh") as f:
+            expected = """\
+                #!/usr/bin/env bash
+                set -e
+                # shellcheck disable=SC2016,SC2034
+                foo='1'
+                # shellcheck disable=SC2016,SC2034
+                bar='2'
+                # shellcheck disable=SC2016,SC2034
+                baz='3'
+                # ---
+                echo -e "foo=$foo\\nbar=$bar\\nbaz=$baz"
                 """
             self.assertListEqual(list(f), clean(expected))
 
