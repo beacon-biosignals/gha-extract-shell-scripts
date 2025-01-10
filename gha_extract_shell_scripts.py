@@ -30,6 +30,7 @@ def sanitize(path):
         ")": "",
         "&": "",
         "$": "",
+        ":": "",
     }
     return path.translate(str.maketrans(replacements))
 
@@ -44,14 +45,14 @@ def process_workflow_file(workflow_path: Path, output_dir: Path, ignored_errors=
         workflow = yaml.safe_load(f)
     workflow_file = workflow_path.name
     # GHA allows workflow names to be defined as empty (e.g. `name:`)
-    workflow_name = sanitize(workflow.get("name") or workflow_path.stem)
+    workflow_name = workflow.get("name") or workflow_path.stem
     workflow_default_shell = workflow.get("defaults", {}).get("run", {}).get("shell")
     workflow_env = workflow.get("env", {})
     count = 0
     print(f"Processing {workflow_path} ({workflow_name})")
     for job_key, job in workflow.get("jobs", {}).items():
         # GHA allows job names to be defined as empty (e.g. `name:`)
-        job_name = sanitize(job.get("name") or job_key)
+        job_name = job.get("name") or job_key
         job_default_shell = (
             job.get("defaults", {}).get("run", {}).get("shell", workflow_default_shell)
         )
@@ -69,7 +70,8 @@ def process_workflow_file(workflow_path: Path, output_dir: Path, ignored_errors=
             # GHA allows step names to be defined as empty (e.g. `name:`)
             step_name = sanitize(step.get("name") or str(i + 1))
             script_path = (
-                output_dir / workflow_file / f"job={job_name}" / f"step={step_name}.sh"
+                output_dir / workflow_file / f"job={sanitize(job_name)}" /
+                f"step={sanitize(step_name)}.sh"
             )
             script_path.parent.mkdir(parents=True, exist_ok=True)
             with script_path.open("w") as f:

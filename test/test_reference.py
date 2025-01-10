@@ -16,6 +16,11 @@ def clean(string):
     return [l + "\n" for l in string.split("\n")]
 
 
+class TestSanitize(unittest.TestCase):
+    def test_gha_expression(self):
+        self.assertEqual(sanitize("Reference test: ${{ matrix.test }}"), "Reference_test_{{_matrix.test_}}")
+
+
 class TestReferenceWorkflows(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
