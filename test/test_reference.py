@@ -9,7 +9,7 @@ import unittest
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(TEST_DIR))
 
-from gha_extract_shell_scripts import process_workflow_file
+from gha_extract_shell_scripts import process_workflow_file, sanitize
 
 def clean(string):
     string = textwrap.dedent(string).rstrip()
