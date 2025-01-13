@@ -9,11 +9,16 @@ import unittest
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(TEST_DIR))
 
-from gha_extract_shell_scripts import process_workflow_file
+from gha_extract_shell_scripts import process_workflow_file, sanitize
 
 def clean(string):
     string = textwrap.dedent(string).rstrip()
     return [l + "\n" for l in string.split("\n")]
+
+
+class TestSanitize(unittest.TestCase):
+    def test_gha_expression(self):
+        self.assertEqual(sanitize("Reference test: ${{ matrix.test }}"), "Reference_test_{{_matrix.test_}}")
 
 
 class TestReferenceWorkflows(unittest.TestCase):
