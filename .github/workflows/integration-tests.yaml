@@ -6,6 +6,12 @@ on:
       - "action.yaml"
       - "gha_extract_shell_scripts.py"
       - ".github/workflows/integration-tests.yaml"
+  push:
+    branches: ["main"]
+    tags: ["*"]
+    paths:
+      - "**/*.py"
+      - ".github/workflows/unit-tests.yaml"
 
 jobs:
   test:
