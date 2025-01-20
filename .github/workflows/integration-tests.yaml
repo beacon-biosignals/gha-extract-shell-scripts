@@ -10,8 +10,9 @@ on:
     branches: ["main", "cv/push"]
     tags: ["*"]
     paths:
-      - "**/*.py"
-      - ".github/workflows/unit-tests.yaml"
+      - "action.yaml"
+      - "gha_extract_shell_scripts.py"
+      - ".github/workflows/integration-tests.yaml"
 
 jobs:
   test:
