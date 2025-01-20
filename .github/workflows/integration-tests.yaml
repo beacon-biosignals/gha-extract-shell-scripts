@@ -7,7 +7,7 @@ on:
       - "gha_extract_shell_scripts.py"
       - ".github/workflows/integration-tests.yaml"
   push:
-    branches: ["main"]
+    branches: ["main", "cv/push"]
     tags: ["*"]
     paths:
       - "**/*.py"
