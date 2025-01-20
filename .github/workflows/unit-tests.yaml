@@ -6,7 +6,7 @@ on:
       - "**/*.py"
       - ".github/workflows/unit-tests.yaml"
   push:
-    branches: ["main", "cv/push"]
+    branches: ["main"]
     tags: ["*"]
     paths:
       - "**/*.py"
