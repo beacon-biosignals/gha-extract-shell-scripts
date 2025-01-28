@@ -5,6 +5,12 @@ on:
     paths:
       - "**/*.py"
       - ".github/workflows/unit-tests.yaml"
+  push:
+    branches: ["main"]
+    tags: ["*"]
+    paths:
+      - "**/*.py"
+      - ".github/workflows/unit-tests.yaml"
 
 jobs:
   test:
